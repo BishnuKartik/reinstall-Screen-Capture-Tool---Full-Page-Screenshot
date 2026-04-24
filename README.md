@@ -1,0 +1,1 @@
+# reinstall-Screen-Capture-Tool---Full-Page-Screenshot
