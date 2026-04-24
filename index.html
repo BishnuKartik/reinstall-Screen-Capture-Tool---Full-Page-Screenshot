@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Goodbye — Screen Capture Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:      #0d0d0f;
+      --bg1:     #131317;
+      --bg2:     #1a1a20;
+      --bg3:     #22222a;
+      --border:  rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.12);
+      --text:    #f0f0f4;
+      --text2:   #9898a8;
+      --text3:   #55556a;
+      --accent:  #00d4ff;
+      --ag:      rgba(0,212,255,0.15);
+      --green:   #4ade80;
+      --amber:   #fbbf24;
+      --purple:  #a78bfa;
+      --pink:    #f472b6;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── Background effects ── */
+    .bg-glow { position: fixed; pointer-events: none; z-index: 0; }
+    .bg-glow-1 {
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 600px;
+      background: radial-gradient(ellipse, rgba(244,114,182,0.07) 0%, transparent 70%);
+    }
+    .bg-glow-2 {
+      bottom: -100px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(ellipse, rgba(167,139,250,0.05) 0%, transparent 70%);
+    }
+    .bg-glow-3 {
+      top: 40%; left: -150px;
+      width: 400px; height: 400px;
+      background: radial-gradient(ellipse, rgba(0,212,255,0.04) 0%, transparent 70%);
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 24px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Hero ── */
+    .hero { text-align: center; padding-bottom: 56px; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 16px;
+      background: rgba(244,114,182,0.08);
+      border: 1px solid rgba(244,114,182,0.22);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--pink);
+      letter-spacing: 0.3px;
+      margin-bottom: 28px;
+      font-family: 'JetBrains Mono', monospace;
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .hero-badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--pink);
+      animation: blink 2.5s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.25; }
+    }
+
+    /* Floating heart icon */
+    .hero-icon {
+      width: 96px; height: 96px;
+      background: linear-gradient(135deg, rgba(244,114,182,0.16), rgba(167,139,250,0.08));
+      border: 1px solid rgba(244,114,182,0.28);
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 28px;
+      box-shadow: 0 0 48px rgba(244,114,182,0.14), 0 8px 32px rgba(0,0,0,0.4);
+      animation: fadeDown 0.6s 0.1s ease both, float 4s ease-in-out infinite 1s;
+      font-size: 42px;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    .hero-title {
+      font-size: clamp(30px, 6vw, 50px);
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      line-height: 1.07;
+      margin-bottom: 18px;
+      animation: fadeDown 0.6s 0.15s ease both;
+    }
+
+    .hero-title .grad {
+      background: linear-gradient(90deg, #f472b6, #a78bfa, #00d4ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 17px;
+      color: var(--text2);
+      max-width: 500px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+      font-weight: 500;
+      animation: fadeDown 0.6s 0.2s ease both;
+    }
+
+    /* Reinstall CTA */
+    .hero-ctas {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeDown 0.6s 0.25s ease both;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 14px 30px;
+      background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,212,255,0.08));
+      border: 1px solid rgba(0,212,255,0.35);
+      border-radius: 12px;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, rgba(0,212,255,0.28), rgba(0,212,255,0.14));
+      box-shadow: 0 0 28px rgba(0,212,255,0.2);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 14px 30px;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      color: var(--text2);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg3);
+      color: var(--text);
+      transform: translateY(-2px);
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Stats strip ── */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 56px;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+
+    .stat-card {
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 16px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.02), transparent);
+      pointer-events: none;
+    }
+
+    .stat-card:hover {
+      border-color: var(--border2);
+      transform: translateY(-2px);
+    }
+
+    .stat-num {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 4px;
+    }
+
+    .stat-num.pink   { color: var(--pink); }
+    .stat-num.purple { color: var(--purple); }
+    .stat-num.cyan   { color: var(--accent); }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text3);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Section divider ── */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .section-divider::before,
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .section-divider-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--text3);
+      text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+    }
+
+    /* ── Farewell message ── */
+    .farewell-card {
+      background: linear-gradient(135deg, rgba(244,114,182,0.06), rgba(167,139,250,0.04));
+      border: 1px solid rgba(244,114,182,0.14);
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+      margin-bottom: 48px;
+      animation: fadeUp 0.5s 0.35s ease both;
+    }
+
+    .farewell-quote {
+      font-size: 15px;
+      color: var(--text2);
+      line-height: 1.8;
+      max-width: 520px;
+      margin: 0 auto 24px;
+      font-style: italic;
+      border-left: 3px solid rgba(244,114,182,0.35);
+      padding-left: 18px;
+      text-align: left;
+    }
+
+    .farewell-sig {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .farewell-sig span {
+      color: var(--pink);
+    }
+
+    /* ── Feedback section ── */
+    .feedback-box {
+      background: linear-gradient(135deg, rgba(0,212,255,0.06), rgba(167,139,250,0.04));
+      border: 1px solid rgba(0,212,255,0.16);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 56px;
+      animation: fadeUp 0.5s 0.4s ease both;
+    }
+
+    .fb-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .fb-sub {
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .reasons-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .reason-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text2);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: left;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .reason-btn:hover,
+    .reason-btn.selected {
+      background: rgba(0,212,255,0.08);
+      border-color: rgba(0,212,255,0.3);
+      color: var(--accent);
+    }
+
+    .reason-btn.selected {
+      box-shadow: 0 0 0 1px rgba(0,212,255,0.2);
+    }
+
+    .reason-emoji { font-size: 16px; flex-shrink: 0; }
+
+    textarea {
+      width: 100%;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      padding: 12px 14px;
+      resize: vertical;
+      min-height: 80px;
+      margin-bottom: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+      line-height: 1.6;
+    }
+
+    textarea::placeholder { color: var(--text3); }
+
+    textarea:focus {
+      border-color: rgba(0,212,255,0.3);
+      box-shadow: 0 0 0 3px rgba(0,212,255,0.05);
+    }
+
+    .submit-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .submit-note {
+      font-size: 11.5px;
+      color: var(--text3);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .btn-submit {
+      padding: 10px 22px;
+      background: linear-gradient(135deg, rgba(0,212,255,0.18), rgba(0,212,255,0.06));
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 10px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      flex-shrink: 0;
+    }
+
+    .btn-submit:hover {
+      background: linear-gradient(135deg, rgba(0,212,255,0.26), rgba(0,212,255,0.12));
+      box-shadow: 0 0 20px rgba(0,212,255,0.18);
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .thank-you-msg {
+      display: none;
+      text-align: center;
+      padding: 18px;
+      background: rgba(74,222,128,0.06);
+      border: 1px solid rgba(74,222,128,0.18);
+      border-radius: 10px;
+      color: var(--green);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* ── What you'll miss ── */
+    .miss-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 56px;
+    }
+
+    .miss-card {
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      transition: all 0.2s;
+      animation: fadeUp 0.5s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .miss-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.02), transparent);
+      pointer-events: none;
+    }
+
+    .miss-card:hover {
+      border-color: var(--border2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    .miss-card:nth-child(1) { animation-delay: 0.1s; }
+    .miss-card:nth-child(2) { animation-delay: 0.15s; }
+    .miss-card:nth-child(3) { animation-delay: 0.2s; }
+    .miss-card:nth-child(4) { animation-delay: 0.25s; }
+
+    .miss-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .miss-icon-pink   { background: rgba(244,114,182,0.12); }
+    .miss-icon-purple { background: rgba(167,139,250,0.12); }
+    .miss-icon-cyan   { background: rgba(0,212,255,0.10); }
+    .miss-icon-amber  { background: rgba(251,191,36,0.10); }
+
+    .miss-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+      letter-spacing: -0.1px;
+    }
+
+    .miss-desc {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.55;
+    }
+
+    /* ── Developer card ── */
+    .dev-card {
+      background: linear-gradient(135deg, rgba(0,212,255,0.06), rgba(96,165,250,0.04));
+      border: 1px solid rgba(0,212,255,0.14);
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .dev-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(96,165,250,0.15));
+      border: 2px solid rgba(0,212,255,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--accent);
+      box-shadow: 0 0 24px rgba(0,212,255,0.12);
+      overflow: hidden;
+    }
+
+    .dev-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
+    }
+
+    .dev-tag {
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 16px;
+    }
+
+    .dev-socials {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .dev-social {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+
+    .dev-social:hover {
+      background: var(--bg3);
+      color: var(--text);
+      transform: translateY(-1px);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      margin-top: 48px;
+    }
+
+    .footer-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .footer-logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,212,255,0.06));
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+
+    .footer-logo-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text2);
+    }
+
+    .footer-text {
+      font-size: 12px;
+      color: var(--text3);
+      line-height: 1.8;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .miss-grid    { grid-template-columns: 1fr; }
+      .reasons-grid { grid-template-columns: 1fr; }
+      .stats-strip  { grid-template-columns: 1fr; }
+      .submit-row   { flex-direction: column; align-items: flex-start; }
+      .hero-ctas    { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+<div class="bg-glow bg-glow-3"></div>
+
+<div class="container">
+
+  <!-- ── HERO ── -->
+  <div class="hero">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      Extension removed · v2.1.0
+    </div>
+
+    <div class="hero-icon">👋</div>
+
+    <h1 class="hero-title">
+      Sorry to see you go,<br>
+      <span class="grad">thanks for the journey</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      Screen Capture Tool has been removed. It was a privilege to be part of your workflow.
+      You're always welcome back — the extension will be waiting. 🙏
+    </p>
+
+    <div class="hero-ctas">
+      <a class="btn-primary" href="https://chromewebstore.google.com/search/BishnuKartik" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 1l1.8 3.6L14 5.3l-3 2.9.7 4.1L8 10.4l-3.7 1.9.7-4.1-3-2.9 4.2-.7z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        </svg>
+        Reinstall Extension
+      </a>
+      <a class="btn-secondary" href="https://chromewebstore.google.com/search/BishnuKartik" target="_blank">
+        🛒 Developer's Works
+      </a>
+    </div>
+  </div>
+
+  <!-- ── USAGE STATS (fun touch) ── -->
+  <div class="stats-strip">
+    <div class="stat-card">
+      <div class="stat-num purple">Free</div>
+      <div class="stat-label">Completely free to use</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num purple">0kb</div>
+      <div class="stat-label">Data ever collected</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num cyan">100%</div>
+      <div class="stat-label">Privacy kept</div>
+    </div>
+
+  </div>
+
+  <!-- ── FAREWELL MESSAGE ── -->
+  <div class="section-divider">
+    <span class="section-divider-label">A personal note</span>
+  </div>
+
+  <div class="farewell-card">
+    <div class="farewell-quote">
+      "Thank you for giving Screen Capture Tool a chance. Building something that people actually use is the best feeling in the world for a developer — and you were part of that.
+
+If I did something wrong, I genuinely want to know. If there's a feature you wished existed, I'd love to build it. This extension isn't finished — it's just getting started. I hope to see you again. 🙏"
+    </div>
+    <div class="farewell-sig">— <span>Kartik</span>, developer &amp; 18-year-old from Nepal 🇳🇵</div>
+  </div>
+
+  <!-- ── QUICK FEEDBACK ── -->
+  <div class="section-divider">
+    <span class="section-divider-label">Help me improve</span>
+  </div>
+
+  <div class="feedback-box">
+    <div class="fb-title">Why did you remove it?</div>
+    <div class="fb-sub">No login, no tracking — just a quick note to help make it better for everyone.</div>
+
+    <div class="reasons-grid">
+      <button class="reason-btn" onclick="toggleReason(this)">
+        <span class="reason-emoji">🐛</span> Found a bug
+      </button>
+      <button class="reason-btn" onclick="toggleReason(this)">
+        <span class="reason-emoji">🔧</span> Missing a feature
+      </button>
+      <button class="reason-btn" onclick="toggleReason(this)">
+        <span class="reason-emoji">⚡</span> Too slow / heavy
+      </button>
+      <button class="reason-btn" onclick="toggleReason(this)">
+        <span class="reason-emoji">🔄</span> Switching to another tool
+      </button>
+      <button class="reason-btn" onclick="toggleReason(this)">
+        <span class="reason-emoji">🤷</span> Just trying things out
+      </button>
+      <button class="reason-btn" onclick="toggleReason(this)">
+        <span class="reason-emoji">💡</span> Other reason
+      </button>
+    </div>
+
+    <textarea id="feedbackText" placeholder="Anything else you'd like to share? (optional)"></textarea>
+
+    <div class="submit-row">
+      <span class="submit-note">Your feedback is anonymous &amp; not sent anywhere.</span>
+      <button class="btn-submit" id="submitBtn" onclick="submitFeedback()">Send anyway 💌</button>
+    </div>
+
+    <div class="thank-you-msg" id="thankYou">
+      ✅ Thank you! Your words mean a lot. — Kartik
+    </div>
+  </div>
+
+  <!-- ── WHAT YOU'LL MISS ── -->
+  <div class="section-divider">
+    <span class="section-divider-label">What you had</span>
+  </div>
+
+  <div class="miss-grid">
+    <div class="miss-card">
+      <div class="miss-icon miss-icon-pink">📸</div>
+      <div>
+        <div class="miss-title">4 Capture Modes</div>
+        <div class="miss-desc">Viewport, full page scroll-stitch, rectangle drag, and circular crop — all in one place.</div>
+      </div>
+    </div>
+
+    <div class="miss-card">
+      <div class="miss-icon miss-icon-purple">💾</div>
+      <div>
+        <div class="miss-title">PNG · JPG · PDF</div>
+        <div class="miss-desc">Lossless PNG, adjustable JPG quality, or perfectly-sized PDF — exported in one click.</div>
+      </div>
+    </div>
+
+    <div class="miss-card">
+      <div class="miss-icon miss-icon-cyan">✏️</div>
+      <div>
+        <div class="miss-title">Custom Filenames</div>
+        <div class="miss-desc">Name every file exactly what you want before download. No messy "screenshot-123" clutter.</div>
+      </div>
+    </div>
+
+    <div class="miss-card">
+      <div class="miss-icon miss-icon-amber">🛡️</div>
+      <div>
+        <div class="miss-title">Zero Data Collection</div>
+        <div class="miss-desc">No servers, no analytics, no cookies. Everything processed 100% locally on your device.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DEVELOPER ── -->
+  <div class="section-divider">
+    <span class="section-divider-label">Stay in touch</span>
+  </div>
+
+  <div class="dev-card">
+    <div class="dev-avatar">
+      <img src="developer.png" alt="Bishnu (Kartik)" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" onerror="this.style.display='none';this.parentElement.textContent='BK'">
+    </div>
+    <div class="dev-name">Bishnu (Kartik)</div>
+    <div class="dev-tag">18-year-old developer from Nepal 🇳🇵 · AI Enthusiast · Privacy-First</div>
+    <div class="dev-socials">
+      <a class="dev-social" href="https://www.facebook.com/shah.bishnu.508739/" target="_blank">
+        📘 Facebook
+      </a>
+      <a class="dev-social" href="https://www.linkedin.com/in/bishnukartik-sah-696244275/" target="_blank">
+        💼 LinkedIn
+      </a>
+      <a class="dev-social" href="#" target="_blank">
+        🌐 Portfolio
+      </a>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <div class="footer">
+    <div class="footer-logo">
+      <div class="footer-logo-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 5.5A1.5 1.5 0 013.5 4h9A1.5 1.5 0 0114 5.5v7A1.5 1.5 0 0112.5 14h-9A1.5 1.5 0 012 12.5v-7z" stroke="currentColor" stroke-width="1.4"/>
+          <circle cx="8" cy="9" r="2" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M5.5 2.5h5l.8 1.5H4.7l.8-1.5z" fill="currentColor"/>
+        </svg>
+      </div>
+      <span class="footer-logo-name">Screen Capture Tool</span>
+    </div>
+    <div class="footer-text">
+      v2.1.0 · Full Page Screenshot · Built with ❤️ in Nepal<br>
+      Privacy-First · No Tracking · No Data Collection
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function toggleReason(btn) {
+    btn.classList.toggle('selected');
+  }
+
+  function submitFeedback() {
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    // Collect selected reasons (purely local — no network call)
+    const selected = [...document.querySelectorAll('.reason-btn.selected')]
+      .map(b => b.textContent.trim());
+    const extra = document.getElementById('feedbackText').value.trim();
+
+    // In a real scenario you could POST to a feedback endpoint here.
+    // For now we log locally and show the thank-you message.
+    console.log('[SCT Feedback]', { reasons: selected, note: extra });
+
+    setTimeout(() => {
+      document.querySelector('.reasons-grid').style.display = 'none';
+      document.querySelector('textarea').style.display = 'none';
+      document.querySelector('.submit-row').style.display = 'none';
+      const ty = document.getElementById('thankYou');
+      ty.style.display = 'block';
+    }, 600);
+  }
+</script>
+
+</body>
+</html>
